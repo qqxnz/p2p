@@ -13,8 +13,8 @@ import (
 func main() {
 	// 创建连接
 	conn, err := net.DialUDP("udp4", nil, &net.UDPAddr{
-		IP:   net.IPv4(172, 16, 5, 152),
-		Port: 9981,
+		IP:   net.IPv4(113, 97, 31, 163),
+		Port: 64386,
 	})
 	if err != nil {
 		log.Print("连接失败", err)

@@ -36,6 +36,22 @@ func main() {
         }
         log.Printf("[%s] %s", remoteAddr.String(), data[:n])
 
+        // 创建连接
+	conn, err := net.DialUDP("udp4", nil, &net.UDPAddr{
+		IP:   net.IPv4(remoteAddr),
+		Port: n,
+	})
+	if err != nil {
+		log.Print("连接失败", err)
+		return
+	}
+	defer conn.Close()
+
+	log.Printf("反向建立连接成功, remote: %s", conn.RemoteAddr().String())
+
+	    // 登录
+	    sendMsg("000000", conn)
+
         // 接收到消息
         request := string(data[:n])
 
@@ -110,4 +126,29 @@ func setSession(uid string, addr *net.UDPAddr) {
 */
 func getSession(uid string) *net.UDPAddr{
     return sessionMap[uid]
+}
+
+
+/*
+  sendMsg
+  @Desc: 发送消息
+  @param: socket 远端连接
+*/
+func sendMsg(msg string, conn *net.UDPConn){
+	// 发送数据
+	senddata := []byte(msg)
+	_, err := conn.Write(senddata)
+	if err != nil {
+		log.Printf("发送数据失败: err-> %v", err)
+		return
+	}
+
+	// 接收数据
+	data := make([]byte, 1024)
+	_, remoteAddr, err := conn.ReadFromUDP(data)
+	if err != nil {
+		log.Printf("读取数据失败: err-> %v", err)
+		return
+	}
+	log.Printf("addr: %s, msg: %s",remoteAddr, string(data))
 }
